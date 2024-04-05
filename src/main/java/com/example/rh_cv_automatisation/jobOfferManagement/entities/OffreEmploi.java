@@ -12,6 +12,8 @@ public class OffreEmploi {
     private Long ID_Offer;
     private String title;
     private String description;
+    private String formation;
+    private double experience;
 
     @ManyToMany
     private List<RequiredSkills> requiredSkills;

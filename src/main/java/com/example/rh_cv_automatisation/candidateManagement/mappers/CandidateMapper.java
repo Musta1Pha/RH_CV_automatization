@@ -9,6 +9,7 @@ import com.example.rh_cv_automatisation.jobOfferManagement.dtos.response.Candida
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -19,15 +20,28 @@ public class CandidateMapper implements BaseMapper<Candidate, CandidateRequestDT
         BeanUtils.copyProperties(candidate,candidateResponseDTO);
         return candidateResponseDTO;
     }
+
     @Override
-    public List<Candidate> entityToDto(List<CandidateRequestDTO> candidateRequestDTOS) {
+    public List<Candidate> dtoToEntity(List<CandidateRequestDTO> candidateRequestDTOS) {
         return null;
     }
+
 
     @Override
     public Candidate dtoToEntity(CandidateRequestDTO candidateRequestDTO) {
         Candidate candidate = new Candidate();
         BeanUtils.copyProperties(candidateRequestDTO,candidate);
         return candidate;
+    }
+
+    @Override
+    public List<CandidateResponseDTO> entityToDto(List<Candidate> candidates) {
+        List<CandidateResponseDTO> candidateResponseDTOS = new ArrayList<>();
+        for(Candidate candidate : candidates){
+            CandidateResponseDTO candidateResponseDTO = entityToDto(candidate);
+            candidateResponseDTOS.add(candidateResponseDTO);
+        }
+
+        return candidateResponseDTOS;
     }
 }

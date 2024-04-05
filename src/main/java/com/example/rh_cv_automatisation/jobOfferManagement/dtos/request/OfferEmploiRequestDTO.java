@@ -1,5 +1,9 @@
 package com.example.rh_cv_automatisation.jobOfferManagement.dtos.request;
 
+import com.example.rh_cv_automatisation.jobOfferManagement.entities.Candidature;
+import com.example.rh_cv_automatisation.jobOfferManagement.entities.RequiredSkills;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +14,10 @@ import java.util.List;
 public class OfferEmploiRequestDTO {
     private String title;
     private String description;
+    private String formation;
+    private double experience;
     private List<RequiredSkillsRequestDTO> requiredSkills;
     private String offerBenefits;
     private String location;
+
 }

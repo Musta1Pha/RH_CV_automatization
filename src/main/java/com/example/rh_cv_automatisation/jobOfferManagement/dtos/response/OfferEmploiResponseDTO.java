@@ -1,4 +1,5 @@
 package com.example.rh_cv_automatisation.jobOfferManagement.dtos.response;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.annotation.security.DenyAll;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,8 +13,11 @@ public class OfferEmploiResponseDTO {
     private Long ID_Offer;
     private String title;
     private String description;
+    private String formation;
+    private double experience;
     private List<RequiredSkillsResponseDTO> requiredSkills;
     private String offerBenefits;
     private String location;
+    @JsonIgnore
     private List<CandidatureResponseDTO> candidatures;
 }

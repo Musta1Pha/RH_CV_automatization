@@ -20,13 +20,23 @@ public class RequiredSkillsMapper implements BaseMapper<RequiredSkills, Required
     }
 
     @Override
-    public List<RequiredSkills> entityToDto(List<RequiredSkillsRequestDTO> requiredSkillsRequestDTOS) {
+    public List<RequiredSkills> dtoToEntity(List<RequiredSkillsRequestDTO> requiredSkillsRequestDTOS) {
         List<RequiredSkills> requiredSkills = new ArrayList<RequiredSkills>();
         for (RequiredSkillsRequestDTO requiredSkill : requiredSkillsRequestDTOS){
             requiredSkills.add(dtoToEntity(requiredSkill));
         }
 
         return requiredSkills;
+    }
+
+    @Override
+    public List<RequiredSkillsResponseDTO> entityToDto(List<RequiredSkills> requiredSkills) {
+        List<RequiredSkillsResponseDTO> requiredSkillsResponseDTOS = new ArrayList<RequiredSkillsResponseDTO>();
+        for (RequiredSkills requiredSkill : requiredSkills){
+            requiredSkillsResponseDTOS.add(entityToDto(requiredSkill));
+        }
+
+        return requiredSkillsResponseDTOS;
     }
 
     @Override

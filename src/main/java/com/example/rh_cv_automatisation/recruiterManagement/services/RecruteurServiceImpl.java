@@ -37,13 +37,17 @@ public class RecruteurServiceImpl implements RecruteurService{
         jobOfferRepository.save(offreEmploi);
         OfferEmploiResponseDTO offerEmploiResponseDTO = jobOfferMapper.entityToDto(offreEmploi);
 
+        List<RequiredSkillsResponseDTO> requiredSkillsResponseDTO = requiredSkillsMapper.entityToDto(requiredSkills);
+        offerEmploiResponseDTO.setRequiredSkills(requiredSkillsResponseDTO);
+
         return offerEmploiResponseDTO;
     }
 
     @Override
     public RequiredSkillsResponseDTO addSkill(RequiredSkillsRequestDTO requiredSkillsRequestDTO) {
         RequiredSkills requiredSkills = requiredSkillsMapper.dtoToEntity(requiredSkillsRequestDTO);
-        RequiredSkillsResponseDTO requiredSkillsResponseDTO = requiredSkillsMapper.entityToDto(requiredSkills);
-        return requiredSkillsResponseDTO;
+        requiredSkillsRepository.save(requiredSkills);
+
+        return requiredSkillsMapper.entityToDto(requiredSkills);
     }
 }

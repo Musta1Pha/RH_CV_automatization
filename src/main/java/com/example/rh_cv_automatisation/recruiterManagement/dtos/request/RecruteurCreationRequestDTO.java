@@ -8,11 +8,7 @@ import lombok.ToString;
 import java.util.List;
 import java.util.Map;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
-
+@Data @AllArgsConstructor @NoArgsConstructor @ToString
 public class RecruteurCreationRequestDTO {
     private RecruteurRequestDTO recruteurRequestDTO;
     private Map<String, List<Long>> roles;

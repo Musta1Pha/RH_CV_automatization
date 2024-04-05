@@ -3,6 +3,7 @@ package com.example.rh_cv_automatisation.adminManagement.web;
 import com.example.rh_cv_automatisation.adminManagement.repositories.AdministrateurRepository;
 import com.example.rh_cv_automatisation.adminManagement.services.AdministrationService;
 import com.example.rh_cv_automatisation.recruiterManagement.dtos.request.RecruteurCreationRequestDTO;
+import com.example.rh_cv_automatisation.recruiterManagement.dtos.request.RecruteurRequestDTO;
 import com.example.rh_cv_automatisation.recruiterManagement.dtos.response.RecruteurResponseDTO;
 import com.example.rh_cv_automatisation.recruiterManagement.dtos.response.Role_RecruteurResponseDTO;
 import com.example.rh_cv_automatisation.recruiterManagement.enums.Status;
@@ -37,7 +38,6 @@ public class AdministrationController {
         this.roleRecruteurMapper = roleRecruteurMapper;
     }
 
-
     @PostMapping(path = "/addRecruiter")
     public RecruteurResponseDTO addRecruiter(@RequestBody RecruteurCreationRequestDTO requestDTO) {
         List<Long> rolesIds = requestDTO.getRoles().get("rolesIds");
@@ -48,7 +48,6 @@ public class AdministrationController {
     public Role_RecruteurResponseDTO addRole(@RequestBody Role_RecruteurRequestDTO roleRecruteurDTO){
         return administrationService.addRole(roleRecruteurDTO);
     }
-
 
     @PostMapping(path = "/assignmentRoles/{id}")
     public RecruteurResponseDTO assignmentRoles(@PathVariable Long id, @RequestBody Map<String, List<Long>> roles) {

@@ -21,9 +21,18 @@ public class roleRecruteurMapper implements BaseMapper<Role_Recruteur, Role_Recr
     }
 
     @Override
-    public List<Role_Recruteur> entityToDto(List<Role_RecruteurRequestDTO> roleRecruteurRequestDTOS) {
+    public List<Role_Recruteur> dtoToEntity(List<Role_RecruteurRequestDTO> roleRecruteurRequestDTOS) {
         List<Role_Recruteur> roles = roleRecruteurRequestDTOS.stream()
                 .map(roleDTO -> dtoToEntity(roleDTO))
+                .collect(Collectors.toList());
+
+        return roles;
+    }
+
+    @Override
+    public List<Role_RecruteurResponseDTO> entityToDto(List<Role_Recruteur> roleRecruteurs) {
+        List<Role_RecruteurResponseDTO> roles = roleRecruteurs.stream()
+                .map(role -> entityToDto(role))
                 .collect(Collectors.toList());
 
         return roles;
@@ -36,6 +45,5 @@ public class roleRecruteurMapper implements BaseMapper<Role_Recruteur, Role_Recr
 
         return roleRecruteur;
     }
-
 
 }

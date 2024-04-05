@@ -14,4 +14,6 @@ public class CandidatureRequestDTO {
     private double noteEntretien;
     private OffreEmploi offreEmploi;
     private Candidate candidate;
+    private double finalPercentage;
+
 }

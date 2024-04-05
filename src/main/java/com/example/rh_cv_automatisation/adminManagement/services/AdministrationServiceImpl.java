@@ -67,6 +67,7 @@ public class AdministrationServiceImpl implements AdministrationService {
         return recruteurResponseDTO;
     }
 
+
     /**
      * Adds a new role using the information provided in the DTO.
      *

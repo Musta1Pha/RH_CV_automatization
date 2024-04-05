@@ -20,7 +20,7 @@ public class JobOfferMapper implements BaseMapper<OffreEmploi, OfferEmploiReques
     }
 
     @Override
-    public List<OffreEmploi> entityToDto(List<OfferEmploiRequestDTO> offerEmploiRequestDTOS) {
+    public List<OffreEmploi> dtoToEntity(List<OfferEmploiRequestDTO> offerEmploiRequestDTOS) {
         return null;
     }
 
@@ -29,5 +29,10 @@ public class JobOfferMapper implements BaseMapper<OffreEmploi, OfferEmploiReques
         OffreEmploi offreEmploi = new OffreEmploi();
         BeanUtils.copyProperties(offerEmploiRequestDTO,offreEmploi);
         return offreEmploi;
+    }
+
+    @Override
+    public List<OfferEmploiResponseDTO> entityToDto(List<OffreEmploi> offreEmplois) {
+        return null;
     }
 }

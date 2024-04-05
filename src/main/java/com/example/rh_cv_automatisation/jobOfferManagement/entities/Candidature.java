@@ -2,6 +2,7 @@ package com.example.rh_cv_automatisation.jobOfferManagement.entities;
 
 import com.example.rh_cv_automatisation.candidateManagement.entities.Candidate;
 import com.example.rh_cv_automatisation.jobOfferManagement.enums.status;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.Date;
@@ -18,4 +19,7 @@ public class Candidature {
     private OffreEmploi offreEmploi;
     @ManyToOne
     private Candidate candidate;
+
+    private double finalPercentage;
+
 }

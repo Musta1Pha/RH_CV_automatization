@@ -20,7 +20,7 @@ public class RecruteurMapper implements BaseMapper<Recruteur, RecruteurRequestDT
     }
 
     @Override
-    public List<Recruteur> entityToDto(List<RecruteurRequestDTO> recruteurRequestDTOS) {
+    public List<Recruteur> dtoToEntity(List<RecruteurRequestDTO> recruteurRequestDTOS) {
         return null;
     }
 
@@ -30,6 +30,11 @@ public class RecruteurMapper implements BaseMapper<Recruteur, RecruteurRequestDT
         BeanUtils.copyProperties(recruteurRequestDTO,recruteur);
 
         return recruteur;
+    }
+
+    @Override
+    public List<RecruteurResponseDTO> entityToDto(List<Recruteur> recruteurs) {
+        return null;
     }
 
 }

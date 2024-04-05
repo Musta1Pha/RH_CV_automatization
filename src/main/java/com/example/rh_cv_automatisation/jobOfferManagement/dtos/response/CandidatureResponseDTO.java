@@ -1,6 +1,5 @@
 package com.example.rh_cv_automatisation.jobOfferManagement.dtos.response;
-import com.example.rh_cv_automatisation.candidateManagement.entities.Candidate;
-import com.example.rh_cv_automatisation.jobOfferManagement.entities.OffreEmploi;
+
 import com.example.rh_cv_automatisation.jobOfferManagement.enums.status;
 import lombok.*;
 
@@ -12,6 +11,8 @@ public class CandidatureResponseDTO {
     private status status;
     private Date dateCreation;
     private double noteEntretien;
-    private OffreEmploi offreEmploi;
-    private Candidate candidate;
+    private double finalPercentage;
+    private OfferEmploiResponseDTO offreEmploi;
+
+
 }
