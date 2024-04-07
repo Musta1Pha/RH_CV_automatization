@@ -89,7 +89,8 @@ public class CandidateServiceImpl implements CandidateService{
                         lastLine = line;
                     }
                     double finalPercentage = Double.parseDouble(lastLine);
-
+                    // (ne peut pas postuler si % <)
+                    if(finalPercentage < 50) return null;
                     CandidatureRequestDTO candidatureRequestDTO = CandidatureRequestDTO.builder()
                             .status(status.OPEN)
                             .dateCreation(new Date())

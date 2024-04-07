@@ -16,4 +16,5 @@ public interface CandidatureRepository extends JpaRepository<Candidature,Long> {
     Candidature chercherCandidadureExiste(@Param("candidate") Candidate candidate, @Param("offreEmploi") OffreEmploi offreEmploi);
 
     List<Candidature> findAllByCandidate(Candidate candidate);
+    List<Candidature> findAllByOffreEmploi(OffreEmploi offreEmploi);
 }

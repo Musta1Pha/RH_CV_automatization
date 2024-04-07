@@ -2,12 +2,11 @@ package com.example.rh_cv_automatisation.recruiterManagement.web;
 
 import com.example.rh_cv_automatisation.jobOfferManagement.dtos.request.OfferEmploiCreationRequestDTO;
 import com.example.rh_cv_automatisation.jobOfferManagement.dtos.request.RequiredSkillsRequestDTO;
+import com.example.rh_cv_automatisation.jobOfferManagement.dtos.response.CandidatureResponseDTO;
 import com.example.rh_cv_automatisation.jobOfferManagement.dtos.response.OfferEmploiResponseDTO;
 import com.example.rh_cv_automatisation.jobOfferManagement.dtos.response.RequiredSkillsResponseDTO;
 import com.example.rh_cv_automatisation.recruiterManagement.services.RecruteurService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,5 +27,10 @@ public class RecruteurController {
     @PostMapping(path = "/addSkill")
     public RequiredSkillsResponseDTO addSkill(@RequestBody RequiredSkillsRequestDTO requiredSkillsRequestDTO){
         return recruteurService.addSkill(requiredSkillsRequestDTO);
+    }
+
+    @GetMapping(path = "/consulterCandidature/{id}")
+    public List<CandidatureResponseDTO> consulterCandidature(@PathVariable Long id){
+        return recruteurService.consulterCandidature(id);
     }
 }
