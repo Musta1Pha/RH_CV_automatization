@@ -15,5 +15,7 @@ public class Candidate extends Utilisateur {
 
     @OneToMany(mappedBy = "candidate")
     private List<Candidature> candidatures;
+    private boolean verified;
+    private String verificationToken;
 
 }

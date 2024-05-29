@@ -5,8 +5,10 @@ import com.example.rh_cv_automatisation.jobOfferManagement.dtos.request.Required
 import com.example.rh_cv_automatisation.jobOfferManagement.dtos.response.CandidatureResponseDTO;
 import com.example.rh_cv_automatisation.jobOfferManagement.dtos.response.OfferEmploiResponseDTO;
 import com.example.rh_cv_automatisation.jobOfferManagement.dtos.response.RequiredSkillsResponseDTO;
-import com.example.rh_cv_automatisation.jobOfferManagement.entities.Candidature;
+import com.example.rh_cv_automatisation.Common.dtos.response.HoraireDisponibleResponseDTO;
+import org.springframework.http.ResponseEntity;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface RecruteurService {
@@ -14,5 +16,12 @@ public interface RecruteurService {
 
     RequiredSkillsResponseDTO addSkill(RequiredSkillsRequestDTO requiredSkillsRequestDTO);
 
+    CandidatureResponseDTO updateStatusCandidature(Long id, String s);
+
     List<CandidatureResponseDTO> consulterCandidature(Long offerId);
+
+    ResponseEntity<byte[]> DownloadCv(Long id) throws IOException;
+    // List<HoraireDisponibleResponseDTO> AjoutHoraire(Long id,HoraireDisponibleRequestDTO horaireDisponibleRequestDTO);
+    //List<HoraireDisponibleResponseDTO> SupprimerHoraire(Long id);
+
 }

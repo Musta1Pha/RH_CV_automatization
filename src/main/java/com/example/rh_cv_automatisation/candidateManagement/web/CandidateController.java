@@ -1,13 +1,13 @@
 package com.example.rh_cv_automatisation.candidateManagement.web;
 
+import com.example.rh_cv_automatisation.Common.dtos.response.EntretienResponseDTO;
 import com.example.rh_cv_automatisation.candidateManagement.dtos.request.CandidateRequestDTO;
 import com.example.rh_cv_automatisation.candidateManagement.dtos.response.CandidateResponseDTO;
 import com.example.rh_cv_automatisation.candidateManagement.services.CandidateService;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import com.example.rh_cv_automatisation.jobOfferManagement.dtos.response.OfferEmploiResponseDTO;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -18,16 +18,48 @@ public class CandidateController {
         this.candidateService = candidateService;
     }
 
-    @PostMapping(path = "/PostulerOffre/{CandidateId}")
-    public CandidateResponseDTO postulerOffre(@PathVariable Long CandidateId , @RequestBody Map<String, Long> requestBody) {
-        Long OfferId = requestBody.get("OfferId");
-        System.out.println(OfferId);
-        return candidateService.postulerOffre(CandidateId, OfferId);
+    @PostMapping(path = "/apply/{candidateId}")
+    public CandidateResponseDTO apply(@PathVariable Long candidateId , @RequestBody Map<String, Long> requestBody) {
+        Long offerId = requestBody.get("offerId");
+        return candidateService.apply(candidateId, offerId);
+    }
+    @GetMapping(path="/getOffres")
+    public List<OfferEmploiResponseDTO> getOffres(){
+        return candidateService.getOffres();
     }
 
-    @PostMapping(path = "CreationCompte")
-    public CandidateResponseDTO CreationCompte(@RequestBody CandidateRequestDTO candidateRequestDTO){
-        return candidateService.CreationCompte(candidateRequestDTO);
+    @GetMapping(path = "/getOffre/{offreId}")
+    public OfferEmploiResponseDTO getOffre(@PathVariable Long offreId){
+        return candidateService.getOffre(offreId);
     }
 
+    @PostMapping(path = "/createAccount")
+    public CandidateResponseDTO createAccount(@RequestBody CandidateRequestDTO candidateRequestDTO){
+        return candidateService.createAccount(candidateRequestDTO);
+    }
+
+    @PutMapping(path = "/updateProfil/{id}")
+    public CandidateResponseDTO updateProfil(@PathVariable Long id,@RequestBody CandidateRequestDTO candidateRequestDTO){
+        return candidateService.updateProfil(id,candidateRequestDTO);
+    }
+
+  /*  @PostMapping(path = "/entretienHoraire/{candidateId}")
+    public EntretienResponseDTO entretienHoraire(@PathVariable Long candidateId , @RequestBody Long id) {
+        return candidateService.entretienHoraire(candidateId,id);
+    }*/
+
+   /* @PostMapping(path = "/cancelEntretien/{id}")
+    public HoraireDisponible cancelEntretien(@PathVariable Long id){
+        return candidateService.cancelEntretien(id);
+    }*/
+
+    @GetMapping("/verify-email")
+    public void verifyEmail(@RequestParam("token") String token) {
+        candidateService.verifyEmail(token);
+    }
+
+    @PostMapping(path = "/connect")
+    public CandidateResponseDTO connect(@RequestBody CandidateRequestDTO candidateRequestDTO){
+        return candidateService.connect(candidateRequestDTO);
+    }
 }

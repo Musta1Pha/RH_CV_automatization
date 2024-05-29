@@ -57,13 +57,7 @@ public class AdministrationServiceImpl implements AdministrationService {
         recruteurRepository.save(recruteur);
 
         RecruteurResponseDTO recruteurResponseDTO = recruteurMapper.entityToDto(recruteur);
-        List<Role_RecruteurResponseDTO> roleRecruteurResponseDTOS = new ArrayList<>();
-        for (Role_Recruteur roleRecruteur : assignedRoles) {
-            Role_RecruteurResponseDTO roleRecruteurResponseDTO = roleRecruteurMapper.entityToDto(roleRecruteur);
-            roleRecruteurResponseDTOS.add(roleRecruteurResponseDTO);
-            recruteurResponseDTO.setRoles(roleRecruteurResponseDTOS);
 
-        }
         return recruteurResponseDTO;
     }
 

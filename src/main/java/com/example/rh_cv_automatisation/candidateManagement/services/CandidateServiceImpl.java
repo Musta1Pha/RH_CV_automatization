@@ -1,12 +1,19 @@
 package com.example.rh_cv_automatisation.candidateManagement.services;
 
+import com.example.rh_cv_automatisation.Common.dtos.request.EntretienRequestDTO;
+import com.example.rh_cv_automatisation.Common.dtos.response.EntretienResponseDTO;
+import com.example.rh_cv_automatisation.Common.dtos.response.HoraireDisponibleResponseDTO;
+import com.example.rh_cv_automatisation.Common.entities.Entretien;
+import com.example.rh_cv_automatisation.Common.enums.Resultat;
+import com.example.rh_cv_automatisation.Common.mappers.EntretienMapper;
+import com.example.rh_cv_automatisation.Common.repositories.EntretienRepository;
+import com.example.rh_cv_automatisation.Common.services.CommunService;
 import com.example.rh_cv_automatisation.candidateManagement.dtos.request.CandidateRequestDTO;
 import com.example.rh_cv_automatisation.candidateManagement.dtos.response.CandidateResponseDTO;
 import com.example.rh_cv_automatisation.candidateManagement.entities.Candidate;
 import com.example.rh_cv_automatisation.candidateManagement.mappers.CandidateMapper;
 import com.example.rh_cv_automatisation.candidateManagement.repositories.CandidateRepository;
 import com.example.rh_cv_automatisation.jobOfferManagement.dtos.request.CandidatureRequestDTO;
-import com.example.rh_cv_automatisation.jobOfferManagement.dtos.request.OfferEmploiRequestDTO;
 import com.example.rh_cv_automatisation.jobOfferManagement.dtos.response.CandidatureResponseDTO;
 import com.example.rh_cv_automatisation.jobOfferManagement.dtos.response.OfferEmploiResponseDTO;
 import com.example.rh_cv_automatisation.jobOfferManagement.entities.Candidature;
@@ -16,16 +23,15 @@ import com.example.rh_cv_automatisation.jobOfferManagement.mappers.CandidatureMa
 import com.example.rh_cv_automatisation.jobOfferManagement.mappers.JobOfferMapper;
 import com.example.rh_cv_automatisation.jobOfferManagement.repositories.CandidatureRepository;
 import com.example.rh_cv_automatisation.jobOfferManagement.repositories.JobOfferRepository;
+import com.example.rh_cv_automatisation.recruiterManagement.services.RecruteurService;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class CandidateServiceImpl implements CandidateService{
@@ -35,18 +41,27 @@ public class CandidateServiceImpl implements CandidateService{
     private CandidatureMapper candidatureMapper;
     private CandidateMapper candidateMapper;
     private JobOfferMapper jobOfferMapper;
+    private JavaMailSender javaMailSender;
+    private EntretienMapper entretienMapper;
+    private EntretienRepository entretienRepository;
+    private RecruteurService recruteurService;
+    private CommunService communService;
 
-    public CandidateServiceImpl(JobOfferRepository jobOfferRepository, CandidateRepository candidateRepository, CandidatureRepository candidatureRepository, CandidatureMapper candidatureMapper, CandidateMapper candidateMapper, JobOfferMapper jobOfferMapper) {
+    public CandidateServiceImpl(JobOfferRepository jobOfferRepository, CandidateRepository candidateRepository, CandidatureRepository candidatureRepository, CandidatureMapper candidatureMapper, CandidateMapper candidateMapper, JobOfferMapper jobOfferMapper, JavaMailSender javaMailSender, EntretienMapper entretienMapper, EntretienRepository entretienRepository, RecruteurService recruteurService, CommunService communService) {
         this.jobOfferRepository = jobOfferRepository;
         this.candidateRepository = candidateRepository;
         this.candidatureRepository = candidatureRepository;
         this.candidatureMapper = candidatureMapper;
         this.candidateMapper = candidateMapper;
         this.jobOfferMapper = jobOfferMapper;
+        this.javaMailSender = javaMailSender;
+        this.entretienMapper = entretienMapper;
+        this.entretienRepository = entretienRepository;
+        this.recruteurService = recruteurService;
+        this.communService = communService;
     }
-    //TODO : Add coverage from model later
     @Override
-    public CandidateResponseDTO postulerOffre(Long candidateId, Long offerId) {
+    public CandidateResponseDTO apply(Long candidateId, Long offerId) {
         Candidate candidate = candidateRepository.findById(candidateId).get();
         OffreEmploi offreEmploi = jobOfferRepository.findById(offerId).get();
 
@@ -56,98 +71,105 @@ public class CandidateServiceImpl implements CandidateService{
         CandidateResponseDTO candidateResponseDTO = null;
 
         if (candidatureTest == null) {
-            try {
+            CandidatureRequestDTO candidatureRequestDTO = CandidatureRequestDTO.builder()
+                    .status(status.OPEN)
+                    .dateCreation(new Date())
+                    .build();
 
-                String cvPath = candidate.getCv().getPath();
-                List<String> keywords = List.of(offreEmploi.getTitle(), offreEmploi.getDescription());
-                String keywordsString = String.join(",", keywords);
-                String experience = String.valueOf(offreEmploi.getExperience());
+            Candidature candidature = candidatureMapper.dtoToEntity(candidatureRequestDTO);
+            candidature.setCandidate(candidate);
+            candidature.setOffreEmploi(offreEmploi);
 
-                URL githubScriptUrl = new URL("https://raw.githubusercontent.com/Musta1Pha/CV_MODEL_ADRIA/master/ADRIA_CV_MODEL.py");
-                Path tempScriptFilePath = Files.createTempFile("ADRIA_CV_MODEL", ".py");
+            candidatureRepository.save(candidature);
 
-                try (InputStream inputStream = githubScriptUrl.openStream();
-                     InputStreamReader streamReader = new InputStreamReader(inputStream);
-                     BufferedReader reader = new BufferedReader(streamReader);
-                     FileWriter writer = new FileWriter(tempScriptFilePath.toFile())) {
+            candidatures.add(candidature);
 
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        writer.write(line);
-                        writer.write("\n");
-                    }
-                }
+            offreEmploi.setCandidatures(candidatures);
+            candidate.setCandidatures(candidatures);
 
-                ProcessBuilder builder = new ProcessBuilder("python", ((Path) tempScriptFilePath).toAbsolutePath().toString(), cvPath, keywordsString, offreEmploi.getFormation(), experience);
-                builder.redirectErrorStream(true);
-                Process process = builder.start();
+            jobOfferRepository.save(offreEmploi);
+            candidateRepository.save(candidate);
 
-                try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-                    String lastLine = null;
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        lastLine = line;
-                    }
-                    double finalPercentage = Double.parseDouble(lastLine);
-                    // (ne peut pas postuler si % <)
-                    if(finalPercentage < 50) return null;
-                    CandidatureRequestDTO candidatureRequestDTO = CandidatureRequestDTO.builder()
-                            .status(status.OPEN)
-                            .dateCreation(new Date())
-                            .finalPercentage(finalPercentage)
-                            .noteEntretien(0)
-                            .build();
-
-                    Candidature candidature = candidatureMapper.dtoToEntity(candidatureRequestDTO);
-                    candidature.setCandidate(candidate);
-                    candidature.setOffreEmploi(offreEmploi);
-
-                    candidatureRepository.save(candidature);
-
-                    candidatures.add(candidature);
-
-                    offreEmploi.setCandidatures(candidatures);
-                    candidate.setCandidatures(candidatures);
-
-                    jobOfferRepository.save(offreEmploi);
-                    candidateRepository.save(candidate);
-
-                    List<CandidatureResponseDTO> candidatureResponseDTOs = new ArrayList<>();
-                    for (Candidature candidature1 : candidatures) {
-                        CandidatureResponseDTO candidatureResponseDTO = candidatureMapper.entityToDto(candidature1);
-                        OfferEmploiResponseDTO offerEmploiResponseDTO = jobOfferMapper.entityToDto(candidature1.getOffreEmploi());
-                        candidatureResponseDTO.setOffreEmploi(offerEmploiResponseDTO);
-                        candidatureResponseDTOs.add(candidatureResponseDTO);
-                    }
-
-                    candidateResponseDTO = candidateMapper.entityToDto(candidate);
-                    candidateResponseDTO.setCandidatures(candidatureResponseDTOs);
-
-
-                    process.waitFor();
-
-                    Files.deleteIfExists(tempScriptFilePath);
-                    return candidateResponseDTO;
-                }
-            } catch (IOException | InterruptedException e) {
-                e.printStackTrace();
+            List<CandidatureResponseDTO> candidatureResponseDTOs = new ArrayList<>();
+            for (Candidature candidature1 : candidatures) {
+                CandidatureResponseDTO candidatureResponseDTO = candidatureMapper.entityToDto(candidature1);
+                candidatureResponseDTOs.add(candidatureResponseDTO);
             }
+
+            candidateResponseDTO = candidateMapper.entityToDto(candidate);
+            candidateResponseDTO.setCandidatures(candidatureResponseDTOs);
+
+            communService.sendNotificationOffre(offerId);
+
         }
-            return null;
+        return candidateResponseDTO;
     }
 
-
     @Override
-    public CandidateResponseDTO CreationCompte(CandidateRequestDTO candidateRequestDTO) {
+    public CandidateResponseDTO createAccount(CandidateRequestDTO candidateRequestDTO) {
+        String verificationToken = UUID.randomUUID().toString();
+
         Candidate candidate = new Candidate();
         candidate.setNom(candidateRequestDTO.getNom());
         candidate.setEmail(candidateRequestDTO.getEmail());
         candidate.setPrenom(candidateRequestDTO.getPrenom());
-        candidate.setCv(candidateRequestDTO.getCv());
         candidate.setPassword(candidateRequestDTO.getPassword());
+        candidate.setCv(candidateRequestDTO.getCv());
+        candidate.setVerified(false);
+        candidate.setVerificationToken(verificationToken);
+
+        candidateRepository.save(candidate);
+
+        sendVerificationEmail(candidate);
+
+        return candidateMapper.entityToDto(candidate);
+    }
+
+    @Override
+    public void sendVerificationEmail(Candidate candidate) {
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(candidate.getEmail());
+        mailMessage.setSubject("Verify Your Email Address");
+        mailMessage.setText("Please click on the following link to verify your email address: "
+                + "http://localhost:8081/verify-email?token=" + candidate.getVerificationToken());
+
+        javaMailSender.send(mailMessage);
+    }
+    @Override
+    public CandidateResponseDTO connect(CandidateRequestDTO candidateRequestDTO) {
+        return null;
+    }
+    @Override
+    public boolean verifyEmail(String token) {
+        Candidate user = candidateRepository.findByVerificationToken(token);
+        if (user != null) {
+            user.setVerified(true);
+            candidateRepository.save(user);
+            return true;
+        } else {
+            return false;
+        }
+    }
+    @Override
+    public CandidateResponseDTO updateProfil(Long id,CandidateRequestDTO candidateRequestDTO) {
+        Candidate candidate = candidateRepository.findById(id).get();
+        if (candidateRequestDTO.getNom() != null) candidate.setNom(candidateRequestDTO.getNom());
+        if (candidateRequestDTO.getPrenom() != null) candidate.setPrenom(candidateRequestDTO.getPrenom());
+        if (candidateRequestDTO.getCv() != null) candidate.setCv(candidateRequestDTO.getCv());
 
         candidateRepository.save(candidate);
 
         return candidateMapper.entityToDto(candidate);
     }
+
+    @Override
+    public List<OfferEmploiResponseDTO> getOffres() {
+        return jobOfferMapper.entityToDto(jobOfferRepository.findAll());
+    }
+
+    @Override
+    public OfferEmploiResponseDTO getOffre(Long offreId) {
+        return jobOfferMapper.entityToDto(jobOfferRepository.findById(offreId).get());
+    }
+
 }

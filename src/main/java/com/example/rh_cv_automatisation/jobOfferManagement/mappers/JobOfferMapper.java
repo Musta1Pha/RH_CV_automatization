@@ -7,15 +7,23 @@ import com.example.rh_cv_automatisation.jobOfferManagement.entities.OffreEmploi;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class JobOfferMapper implements BaseMapper<OffreEmploi, OfferEmploiRequestDTO, OfferEmploiResponseDTO> {
 
+   private RequiredSkillsMapper requiredSkillsMapper;
+
+    public JobOfferMapper(RequiredSkillsMapper requiredSkillsMapper) {
+        this.requiredSkillsMapper = requiredSkillsMapper;
+    }
+
     @Override
     public OfferEmploiResponseDTO entityToDto(OffreEmploi offreEmploi) {
         OfferEmploiResponseDTO offerEmploiResponseDTO = new OfferEmploiResponseDTO();
         BeanUtils.copyProperties(offreEmploi, offerEmploiResponseDTO);
+        offerEmploiResponseDTO.setRequiredSkills(requiredSkillsMapper.entityToDto(offreEmploi.getRequiredSkills()));
         return offerEmploiResponseDTO;
     }
 
@@ -33,6 +41,11 @@ public class JobOfferMapper implements BaseMapper<OffreEmploi, OfferEmploiReques
 
     @Override
     public List<OfferEmploiResponseDTO> entityToDto(List<OffreEmploi> offreEmplois) {
-        return null;
+        List<OfferEmploiResponseDTO> offerEmploiResponseDTOS = new ArrayList<>();
+        for(OffreEmploi offreEmploi : offreEmplois){
+            offerEmploiResponseDTOS.add(entityToDto(offreEmploi));
+        }
+
+        return offerEmploiResponseDTOS;
     }
 }

@@ -7,15 +7,22 @@ import com.example.rh_cv_automatisation.recruiterManagement.entities.Recruteur;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class RecruteurMapper implements BaseMapper<Recruteur, RecruteurRequestDTO, RecruteurResponseDTO> {
+    private roleRecruteurMapper roleRecruteurMapper;
+
+    public RecruteurMapper(com.example.rh_cv_automatisation.recruiterManagement.mappers.roleRecruteurMapper roleRecruteurMapper) {
+        this.roleRecruteurMapper = roleRecruteurMapper;
+    }
+
     @Override
     public RecruteurResponseDTO entityToDto(Recruteur recruteur) {
         RecruteurResponseDTO recruteurResponseDTO = new RecruteurResponseDTO();
         BeanUtils.copyProperties(recruteur,recruteurResponseDTO);
-
+        recruteurResponseDTO.setRoles(roleRecruteurMapper.entityToDto(recruteur.getRoles()));
         return recruteurResponseDTO;
     }
 
@@ -34,7 +41,11 @@ public class RecruteurMapper implements BaseMapper<Recruteur, RecruteurRequestDT
 
     @Override
     public List<RecruteurResponseDTO> entityToDto(List<Recruteur> recruteurs) {
-        return null;
+        List<RecruteurResponseDTO> recruteurResponseDTO = new ArrayList<>();
+        for(Recruteur recruteur:recruteurs){
+            recruteurResponseDTO.add(entityToDto(recruteur));
+        }
+        return recruteurResponseDTO;
     }
 
 }

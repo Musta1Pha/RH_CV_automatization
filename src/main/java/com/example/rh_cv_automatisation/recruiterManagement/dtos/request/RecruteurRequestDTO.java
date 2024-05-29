@@ -15,5 +15,4 @@ public class RecruteurRequestDTO {
     private String email;
     private Status status;
     private String password;
-    private List<Role_RecruteurRequestDTO> roles;
 }

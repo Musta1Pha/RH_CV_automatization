@@ -1,5 +1,6 @@
 package com.example.rh_cv_automatisation.candidateManagement.dtos.response;
 
+import com.example.rh_cv_automatisation.Common.dtos.response.NotificationResponseDTO;
 import com.example.rh_cv_automatisation.Common.entities.Notification;
 import com.example.rh_cv_automatisation.jobOfferManagement.dtos.response.CandidatureResponseDTO;
 import com.example.rh_cv_automatisation.jobOfferManagement.entities.Candidature;
@@ -22,7 +23,7 @@ public class CandidateResponseDTO {
     private String prenom;
     private String email;
     private String password;
-    private List<Notification> notifications;
+    private List<NotificationResponseDTO> notifications;
     private File cv;
     private List<CandidatureResponseDTO> candidatures;
 
