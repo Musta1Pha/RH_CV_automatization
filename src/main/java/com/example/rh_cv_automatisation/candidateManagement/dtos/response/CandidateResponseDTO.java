@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.util.List;
@@ -24,7 +25,7 @@ public class CandidateResponseDTO {
     private String email;
     private String password;
     private List<NotificationResponseDTO> notifications;
-    private File cv;
+    private CvDataResponseDTO cv;
     private List<CandidatureResponseDTO> candidatures;
 
 }

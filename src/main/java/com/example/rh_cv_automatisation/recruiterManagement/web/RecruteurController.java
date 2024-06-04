@@ -37,10 +37,10 @@ public class RecruteurController {
         return recruteurService.consulterCandidature(id);
     }
 
-    @GetMapping(path = "/DownloadCV/{id}")
+   /* @GetMapping(path = "/DownloadCV/{id}")
     public ResponseEntity<byte[]> DownloadCv(@PathVariable Long id) throws IOException {
         return recruteurService.DownloadCv(id);
-    }
+    }*/
 
    /* @PostMapping(path = "/AjoutHoraire/{id}")
     public List<HoraireDisponibleResponseDTO> AjoutHoraire(@PathVariable Long id, @RequestBody HoraireDisponibleRequestDTO horaireDisponibleRequestDTO) {

@@ -109,7 +109,7 @@ public class RecruteurServiceImpl implements RecruteurService{
         return candidatureResponseDTOS;
     }
 
-    @Override
+  /*  @Override
     public ResponseEntity<byte[]> DownloadCv(Long id) throws IOException{
         Candidate candidate = candidateRepository.findById(id).get();
 
@@ -133,7 +133,7 @@ public class RecruteurServiceImpl implements RecruteurService{
                 .headers(headers)
                 .body(cvBytes);
     }
-
+*/
 
 
 

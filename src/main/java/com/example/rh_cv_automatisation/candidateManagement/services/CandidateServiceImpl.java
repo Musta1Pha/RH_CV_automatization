@@ -1,24 +1,18 @@
 package com.example.rh_cv_automatisation.candidateManagement.services;
 
-import com.example.rh_cv_automatisation.Common.dtos.request.EntretienRequestDTO;
-import com.example.rh_cv_automatisation.Common.dtos.response.EntretienResponseDTO;
-import com.example.rh_cv_automatisation.Common.dtos.response.HoraireDisponibleResponseDTO;
-import com.example.rh_cv_automatisation.Common.entities.Entretien;
-import com.example.rh_cv_automatisation.Common.enums.Resultat;
 import com.example.rh_cv_automatisation.Common.mappers.EntretienMapper;
 import com.example.rh_cv_automatisation.Common.repositories.EntretienRepository;
 import com.example.rh_cv_automatisation.Common.services.CommunService;
+import com.example.rh_cv_automatisation.ai_management.services.Llama2RestService;
 import com.example.rh_cv_automatisation.candidateManagement.dtos.request.CandidateRequestDTO;
 import com.example.rh_cv_automatisation.candidateManagement.dtos.response.CandidateResponseDTO;
 import com.example.rh_cv_automatisation.candidateManagement.entities.Candidate;
+import com.example.rh_cv_automatisation.candidateManagement.entities.CvData;
 import com.example.rh_cv_automatisation.candidateManagement.mappers.CandidateMapper;
+import com.example.rh_cv_automatisation.candidateManagement.mappers.CvDataMapper;
 import com.example.rh_cv_automatisation.candidateManagement.repositories.CandidateRepository;
-import com.example.rh_cv_automatisation.jobOfferManagement.dtos.request.CandidatureRequestDTO;
-import com.example.rh_cv_automatisation.jobOfferManagement.dtos.response.CandidatureResponseDTO;
+import com.example.rh_cv_automatisation.candidateManagement.repositories.CvDataRepository;
 import com.example.rh_cv_automatisation.jobOfferManagement.dtos.response.OfferEmploiResponseDTO;
-import com.example.rh_cv_automatisation.jobOfferManagement.entities.Candidature;
-import com.example.rh_cv_automatisation.jobOfferManagement.entities.OffreEmploi;
-import com.example.rh_cv_automatisation.jobOfferManagement.enums.status;
 import com.example.rh_cv_automatisation.jobOfferManagement.mappers.CandidatureMapper;
 import com.example.rh_cv_automatisation.jobOfferManagement.mappers.JobOfferMapper;
 import com.example.rh_cv_automatisation.jobOfferManagement.repositories.CandidatureRepository;
@@ -27,9 +21,9 @@ import com.example.rh_cv_automatisation.recruiterManagement.services.RecruteurSe
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.Date;
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,8 +40,13 @@ public class CandidateServiceImpl implements CandidateService{
     private EntretienRepository entretienRepository;
     private RecruteurService recruteurService;
     private CommunService communService;
+    private Llama2RestService llama2RestService;
+    private CvDataMapper cvDataMapper;
+    private CvDataRepository cvDataRepository;
+    private StorageService service;
 
-    public CandidateServiceImpl(JobOfferRepository jobOfferRepository, CandidateRepository candidateRepository, CandidatureRepository candidatureRepository, CandidatureMapper candidatureMapper, CandidateMapper candidateMapper, JobOfferMapper jobOfferMapper, JavaMailSender javaMailSender, EntretienMapper entretienMapper, EntretienRepository entretienRepository, RecruteurService recruteurService, CommunService communService) {
+
+    public CandidateServiceImpl(JobOfferRepository jobOfferRepository, CandidateRepository candidateRepository, CandidatureRepository candidatureRepository, CandidatureMapper candidatureMapper, CandidateMapper candidateMapper, JobOfferMapper jobOfferMapper, JavaMailSender javaMailSender, EntretienMapper entretienMapper, EntretienRepository entretienRepository, RecruteurService recruteurService, CommunService communService, Llama2RestService llama2RestService, CvDataMapper cvDataMapper, CvDataRepository cvDataRepository, StorageService service) {
         this.jobOfferRepository = jobOfferRepository;
         this.candidateRepository = candidateRepository;
         this.candidatureRepository = candidatureRepository;
@@ -59,8 +58,12 @@ public class CandidateServiceImpl implements CandidateService{
         this.entretienRepository = entretienRepository;
         this.recruteurService = recruteurService;
         this.communService = communService;
+        this.llama2RestService = llama2RestService;
+        this.cvDataMapper = cvDataMapper;
+        this.cvDataRepository = cvDataRepository;
+        this.service = service;
     }
-    @Override
+  /*  @Override
     public CandidateResponseDTO apply(Long candidateId, Long offerId) {
         Candidate candidate = candidateRepository.findById(candidateId).get();
         OffreEmploi offreEmploi = jobOfferRepository.findById(offerId).get();
@@ -70,10 +73,21 @@ public class CandidateServiceImpl implements CandidateService{
         Candidature candidatureTest = candidatureRepository.chercherCandidadureExiste(candidate, offreEmploi);
         CandidateResponseDTO candidateResponseDTO = null;
 
+        CandidateRequestDTO candidateRequestDTO = new CandidateRequestDTO();
+        candidateRequestDTO.setCv((MultipartFile) candidate.getCvPath());
+
+        List<RequiredSkillsRequestDTO> keywords = new ArrayList<>();
+        for(RequiredSkills skill : offreEmploi.getRequiredSkills()){
+            RequiredSkillsRequestDTO requiredSkillsRequestDTO = new RequiredSkillsRequestDTO(skill.getSkill());
+            keywords.add(requiredSkillsRequestDTO);
+        }
+
         if (candidatureTest == null) {
             CandidatureRequestDTO candidatureRequestDTO = CandidatureRequestDTO.builder()
                     .status(status.OPEN)
                     .dateCreation(new Date())
+                    .finalPercentage(llama2RestService.chatWithFile(offreEmploi.getExperience(), offreEmploi.getFormation(), keywords, candidateRequestDTO.getCv()))
+                    .noteEntretien(0)
                     .build();
 
             Candidature candidature = candidatureMapper.dtoToEntity(candidatureRequestDTO);
@@ -103,10 +117,10 @@ public class CandidateServiceImpl implements CandidateService{
 
         }
         return candidateResponseDTO;
-    }
+    }*/
 
     @Override
-    public CandidateResponseDTO createAccount(CandidateRequestDTO candidateRequestDTO) {
+    public CandidateResponseDTO createAccount(CandidateRequestDTO candidateRequestDTO, MultipartFile file) throws IOException {
         String verificationToken = UUID.randomUUID().toString();
 
         Candidate candidate = new Candidate();
@@ -114,14 +128,15 @@ public class CandidateServiceImpl implements CandidateService{
         candidate.setEmail(candidateRequestDTO.getEmail());
         candidate.setPrenom(candidateRequestDTO.getPrenom());
         candidate.setPassword(candidateRequestDTO.getPassword());
-        candidate.setCv(candidateRequestDTO.getCv());
         candidate.setVerified(false);
         candidate.setVerificationToken(verificationToken);
 
+        CvData cvData = service.uploadFile(file);
+
+        candidate.setCv(cvData);
+
         candidateRepository.save(candidate);
-
         sendVerificationEmail(candidate);
-
         return candidateMapper.entityToDto(candidate);
     }
 
@@ -150,17 +165,17 @@ public class CandidateServiceImpl implements CandidateService{
             return false;
         }
     }
-    @Override
+   /* @Override
     public CandidateResponseDTO updateProfil(Long id,CandidateRequestDTO candidateRequestDTO) {
         Candidate candidate = candidateRepository.findById(id).get();
         if (candidateRequestDTO.getNom() != null) candidate.setNom(candidateRequestDTO.getNom());
         if (candidateRequestDTO.getPrenom() != null) candidate.setPrenom(candidateRequestDTO.getPrenom());
-        if (candidateRequestDTO.getCv() != null) candidate.setCv(candidateRequestDTO.getCv());
+        if (candidateRequestDTO.getCv() != null) candidate.setCv((File) candidateRequestDTO.getCv());
 
         candidateRepository.save(candidate);
 
         return candidateMapper.entityToDto(candidate);
-    }
+    }*/
 
     @Override
     public List<OfferEmploiResponseDTO> getOffres() {

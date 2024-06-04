@@ -20,7 +20,7 @@ public interface RecruteurService {
 
     List<CandidatureResponseDTO> consulterCandidature(Long offerId);
 
-    ResponseEntity<byte[]> DownloadCv(Long id) throws IOException;
+  //  ResponseEntity<byte[]> DownloadCv(Long id) throws IOException;
     // List<HoraireDisponibleResponseDTO> AjoutHoraire(Long id,HoraireDisponibleRequestDTO horaireDisponibleRequestDTO);
     //List<HoraireDisponibleResponseDTO> SupprimerHoraire(Long id);
 

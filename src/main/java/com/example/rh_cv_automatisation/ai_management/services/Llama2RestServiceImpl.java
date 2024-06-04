@@ -1,5 +1,7 @@
-package com.example.rh_cv_automatisation.ai_management.controllers;
+package com.example.rh_cv_automatisation.ai_management.services;
 
+import com.example.rh_cv_automatisation.jobOfferManagement.dtos.request.RequiredSkillsRequestDTO;
+import com.example.rh_cv_automatisation.jobOfferManagement.entities.RequiredSkills;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.json.JSONArray;
@@ -7,36 +9,32 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@RestController
-public class Llama2RestController {
+@Component
+public class Llama2RestServiceImpl implements Llama2RestService {
 
     @Value("${lmstudio.api.url}")
     private String apiUrl;
 
     private final RestTemplate restTemplate;
 
-    public Llama2RestController(RestTemplate restTemplate) {
+    public Llama2RestServiceImpl(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
-    @PostMapping(path = "/chat-with-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Integer chatWithFile( @RequestParam("experience") int experience,
-                                @RequestParam("education") int education,
-                                @RequestParam("keywords") List<String> keywords,
-                                @RequestParam("file") MultipartFile file) {
+    @Override
+    public Integer chatWithFile(int experience, int education, List<RequiredSkillsRequestDTO> keywords, MultipartFile file) {
         String fileContent = extractTextFromPdf(file);
         if (fileContent == null) {
             return null;
@@ -88,19 +86,24 @@ public class Llama2RestController {
             }
         }
 
+        List<Integer> percentages = new ArrayList<>();
+
         Pattern pattern = Pattern.compile("(\\d+)%");
         Matcher matcher = pattern.matcher(content);
 
-        String Percentage = "";
-
-        while (matcher.find()) {
-            Percentage = matcher.group(1);
+        int sum=0;
+        while (matcher.find() && percentages.size() < 3) {
+            percentages.add(Integer.parseInt(matcher.group(1)));
+            sum += Integer.parseInt(matcher.group(1));
         }
 
-        return Integer.parseInt(Percentage);
+        System.out.println(percentages);
+
+        return sum/3;
     }
 
-    private String extractTextFromPdf(MultipartFile file) {
+    @Override
+    public String extractTextFromPdf(MultipartFile file) {
         PDDocument document = null;
         try {
             document = PDDocument.load(file.getInputStream());
@@ -119,5 +122,5 @@ public class Llama2RestController {
             }
         }
     }
-}
 
+}

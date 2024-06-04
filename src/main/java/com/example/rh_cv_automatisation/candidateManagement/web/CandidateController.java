@@ -5,8 +5,11 @@ import com.example.rh_cv_automatisation.candidateManagement.dtos.request.Candida
 import com.example.rh_cv_automatisation.candidateManagement.dtos.response.CandidateResponseDTO;
 import com.example.rh_cv_automatisation.candidateManagement.services.CandidateService;
 import com.example.rh_cv_automatisation.jobOfferManagement.dtos.response.OfferEmploiResponseDTO;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -18,11 +21,11 @@ public class CandidateController {
         this.candidateService = candidateService;
     }
 
-    @PostMapping(path = "/apply/{candidateId}")
+   /* @PostMapping(path = "/apply/{candidateId}")
     public CandidateResponseDTO apply(@PathVariable Long candidateId , @RequestBody Map<String, Long> requestBody) {
         Long offerId = requestBody.get("offerId");
         return candidateService.apply(candidateId, offerId);
-    }
+    }*/
     @GetMapping(path="/getOffres")
     public List<OfferEmploiResponseDTO> getOffres(){
         return candidateService.getOffres();
@@ -33,16 +36,16 @@ public class CandidateController {
         return candidateService.getOffre(offreId);
     }
 
-    @PostMapping(path = "/createAccount")
-    public CandidateResponseDTO createAccount(@RequestBody CandidateRequestDTO candidateRequestDTO){
-        return candidateService.createAccount(candidateRequestDTO);
+    @PostMapping(path = "/createAccount",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public CandidateResponseDTO createAccount(@ModelAttribute CandidateRequestDTO candidateRequestDTO, MultipartFile file) throws IOException {
+        return candidateService.createAccount(candidateRequestDTO,file);
     }
 
-    @PutMapping(path = "/updateProfil/{id}")
+  /*  @PutMapping(path = "/updateProfil/{id}")
     public CandidateResponseDTO updateProfil(@PathVariable Long id,@RequestBody CandidateRequestDTO candidateRequestDTO){
         return candidateService.updateProfil(id,candidateRequestDTO);
     }
-
+*/
   /*  @PostMapping(path = "/entretienHoraire/{candidateId}")
     public EntretienResponseDTO entretienHoraire(@PathVariable Long candidateId , @RequestBody Long id) {
         return candidateService.entretienHoraire(candidateId,id);

@@ -30,6 +30,12 @@ public class RhCvAutomatisationApplication {
 
             administrateurRepository.save(administrateur);
 
+
+
+
+
+
+
         };
     }
 
