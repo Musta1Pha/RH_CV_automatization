@@ -11,13 +11,14 @@ import java.io.IOException;
 import java.util.List;
 
 public interface CandidateService {
-    CandidateResponseDTO createAccount(CandidateRequestDTO candidateRequestDTO, MultipartFile file) throws IOException;
-    //CandidateResponseDTO apply(Long candidateId , Long offerId);
-    //CandidateResponseDTO updateProfil(Long id,CandidateRequestDTO candidateRequestDTO);
-    List<OfferEmploiResponseDTO> getOffres();
-    OfferEmploiResponseDTO getOffre(Long offreId);
+    String createAccount(CandidateRequestDTO candidateRequestDTO, MultipartFile file) throws IOException;
     boolean verifyEmail(String token);
     void sendVerificationEmail(Candidate candidate);
+    String updateProfil(Long id,CandidateRequestDTO candidateRequestDTO,MultipartFile file) throws IOException;
+
+    //CandidateResponseDTO apply(Long candidateId , Long offerId);
+    List<OfferEmploiResponseDTO> getOffres();
+    OfferEmploiResponseDTO getOffre(Long offreId);
 
     //TODO : IMPLEMENT THE METHOD
     CandidateResponseDTO connect(CandidateRequestDTO candidateRequestDTO);

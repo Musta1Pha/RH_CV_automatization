@@ -120,7 +120,7 @@ public class CandidateServiceImpl implements CandidateService{
     }*/
 
     @Override
-    public CandidateResponseDTO createAccount(CandidateRequestDTO candidateRequestDTO, MultipartFile file) throws IOException {
+    public String createAccount(CandidateRequestDTO candidateRequestDTO, MultipartFile file) throws IOException {
         String verificationToken = UUID.randomUUID().toString();
 
         Candidate candidate = new Candidate();
@@ -137,7 +137,7 @@ public class CandidateServiceImpl implements CandidateService{
 
         candidateRepository.save(candidate);
         sendVerificationEmail(candidate);
-        return candidateMapper.entityToDto(candidate);
+        return "You have been successfully registred";
     }
 
     @Override
@@ -150,10 +150,7 @@ public class CandidateServiceImpl implements CandidateService{
 
         javaMailSender.send(mailMessage);
     }
-    @Override
-    public CandidateResponseDTO connect(CandidateRequestDTO candidateRequestDTO) {
-        return null;
-    }
+
     @Override
     public boolean verifyEmail(String token) {
         Candidate user = candidateRepository.findByVerificationToken(token);
@@ -165,17 +162,23 @@ public class CandidateServiceImpl implements CandidateService{
             return false;
         }
     }
-   /* @Override
-    public CandidateResponseDTO updateProfil(Long id,CandidateRequestDTO candidateRequestDTO) {
+
+    @Override
+    public CandidateResponseDTO connect(CandidateRequestDTO candidateRequestDTO) {
+        return null;
+    }
+
+    @Override
+    public String updateProfil(Long id,CandidateRequestDTO candidateRequestDTO,MultipartFile file) throws IOException {
         Candidate candidate = candidateRepository.findById(id).get();
         if (candidateRequestDTO.getNom() != null) candidate.setNom(candidateRequestDTO.getNom());
         if (candidateRequestDTO.getPrenom() != null) candidate.setPrenom(candidateRequestDTO.getPrenom());
-        if (candidateRequestDTO.getCv() != null) candidate.setCv((File) candidateRequestDTO.getCv());
+        if (file != null) candidate.setCv(service.uploadFile(file));
 
         candidateRepository.save(candidate);
 
-        return candidateMapper.entityToDto(candidate);
-    }*/
+        return "Profil updated successfully";
+    }
 
     @Override
     public List<OfferEmploiResponseDTO> getOffres() {

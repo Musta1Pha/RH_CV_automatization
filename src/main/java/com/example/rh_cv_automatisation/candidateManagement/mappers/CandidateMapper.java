@@ -1,6 +1,5 @@
 package com.example.rh_cv_automatisation.candidateManagement.mappers;
 
-import com.example.rh_cv_automatisation.Common.entities.Notification;
 import com.example.rh_cv_automatisation.Common.mappers.BaseMapper;
 import com.example.rh_cv_automatisation.Common.mappers.NotificationMapper;
 import com.example.rh_cv_automatisation.candidateManagement.dtos.request.CandidateRequestDTO;
@@ -17,10 +16,12 @@ import java.util.List;
 public class CandidateMapper implements BaseMapper<Candidate, CandidateRequestDTO, CandidateResponseDTO> {
     private CandidatureMapper candidatureMapper ;
     private NotificationMapper notificationMapper;
+    private CvDataMapper cvDataMapper;
 
-    public CandidateMapper(CandidatureMapper candidatureMapper, NotificationMapper notificationMapper) {
+    public CandidateMapper(CandidatureMapper candidatureMapper, NotificationMapper notificationMapper, CvDataMapper cvDataMapper) {
         this.candidatureMapper = candidatureMapper;
         this.notificationMapper = notificationMapper;
+        this.cvDataMapper = cvDataMapper;
     }
 
     @Override
@@ -31,6 +32,8 @@ public class CandidateMapper implements BaseMapper<Candidate, CandidateRequestDT
             candidateResponseDTO.setCandidatures(candidatureMapper.entityToDto(candidate.getCandidatures()));
         if(candidate.getNotifications() != null)
             candidateResponseDTO.setNotifications(notificationMapper.entityToDto(candidate.getNotifications()));
+
+        candidateResponseDTO.setCv(cvDataMapper.entityToDto(candidate.getCv()));
 
         return candidateResponseDTO;
     }
