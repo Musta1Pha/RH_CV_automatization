@@ -4,6 +4,7 @@ import com.example.rh_cv_automatisation.Common.dtos.response.EntretienResponseDT
 import com.example.rh_cv_automatisation.candidateManagement.dtos.request.CandidateRequestDTO;
 import com.example.rh_cv_automatisation.candidateManagement.dtos.response.CandidateResponseDTO;
 import com.example.rh_cv_automatisation.candidateManagement.entities.Candidate;
+import com.example.rh_cv_automatisation.candidateManagement.entities.CvData;
 import com.example.rh_cv_automatisation.jobOfferManagement.dtos.response.OfferEmploiResponseDTO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,11 +16,16 @@ public interface CandidateService {
     boolean verifyEmail(String token);
     void sendVerificationEmail(Candidate candidate);
     String updateProfil(Long id,CandidateRequestDTO candidateRequestDTO,MultipartFile file) throws IOException;
+    MultipartFile apply(Long candidateId, Long offerId);
 
-    //CandidateResponseDTO apply(Long candidateId , Long offerId);
+
+
+
     List<OfferEmploiResponseDTO> getOffres();
     OfferEmploiResponseDTO getOffre(Long offreId);
 
     //TODO : IMPLEMENT THE METHOD
     CandidateResponseDTO connect(CandidateRequestDTO candidateRequestDTO);
+
+
 }

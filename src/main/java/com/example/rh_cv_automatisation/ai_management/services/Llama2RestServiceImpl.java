@@ -1,7 +1,7 @@
 package com.example.rh_cv_automatisation.ai_management.services;
 
+import com.example.rh_cv_automatisation.candidateManagement.entities.CvData;
 import com.example.rh_cv_automatisation.jobOfferManagement.dtos.request.RequiredSkillsRequestDTO;
-import com.example.rh_cv_automatisation.jobOfferManagement.entities.RequiredSkills;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.json.JSONArray;
@@ -34,7 +34,8 @@ public class Llama2RestServiceImpl implements Llama2RestService {
     }
 
     @Override
-    public Integer chatWithFile(int experience, int education, List<RequiredSkillsRequestDTO> keywords, MultipartFile file) {
+    public Integer chatWithFile(int experience, int education, List<RequiredSkillsRequestDTO> keywords, CvData cvData) {
+        MultipartFile file = CvDataConverter.convertToMultipartFile(cvData);
         String fileContent = extractTextFromPdf(file);
         if (fileContent == null) {
             return null;
@@ -44,12 +45,12 @@ public class Llama2RestServiceImpl implements Llama2RestService {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         String systemMessageContent = """
-                You are an assistant working as a human resources profile.
-                You will be asked to provide a percentage match between the CV and the job offer provided.
-                """;
+            You are an assistant working as a human resources profile.
+            You will be asked to provide a percentage match between the CV and the job offer provided.
+            """;
 
         String query = "I want a response containing only the final percentage of match of the CV compared to the defined information: the years of experience " + experience
-                +", the years of education" + education + ", as well as the keywords to search" + keywords + ". you apply the sum of all the percentages values and you divide on 3, I don't want the details.";
+                + ", the years of education " + education + ", as well as the keywords to search " + keywords + ". you apply the sum of all the percentages values and you divide on 3, I don't want the details.";
 
         String userMessageContent = query + "\n\nContenu du fichier:\n" + fileContent;
 
@@ -91,7 +92,7 @@ public class Llama2RestServiceImpl implements Llama2RestService {
         Pattern pattern = Pattern.compile("(\\d+)%");
         Matcher matcher = pattern.matcher(content);
 
-        int sum=0;
+        int sum = 0;
         while (matcher.find() && percentages.size() < 3) {
             percentages.add(Integer.parseInt(matcher.group(1)));
             sum += Integer.parseInt(matcher.group(1));
@@ -99,7 +100,7 @@ public class Llama2RestServiceImpl implements Llama2RestService {
 
         System.out.println(percentages);
 
-        return sum/3;
+        return sum / 3;
     }
 
     @Override

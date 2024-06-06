@@ -1,6 +1,7 @@
 package com.example.rh_cv_automatisation.ai_management.web;
 
 import com.example.rh_cv_automatisation.ai_management.services.Llama2RestService;
+import com.example.rh_cv_automatisation.candidateManagement.entities.CvData;
 import com.example.rh_cv_automatisation.jobOfferManagement.dtos.request.RequiredSkillsRequestDTO;
 import com.example.rh_cv_automatisation.jobOfferManagement.entities.RequiredSkills;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,9 +32,9 @@ public class Llama2RestController {
     public Integer chatWithFile( @RequestParam("experience") int experience,
                                 @RequestParam("education") int education,
                                 @RequestParam("keywords") List<RequiredSkillsRequestDTO> keywords,
-                                @RequestParam("file") MultipartFile file) {
+                                @RequestParam("cvData") CvData cvData) {
 
-        return llama2RestService.chatWithFile(experience, education, keywords, file);
+        return llama2RestService.chatWithFile(experience, education, keywords, cvData);
     }
 
 

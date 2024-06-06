@@ -7,7 +7,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.*;
 
-import javax.persistence.Lob;
 import java.util.List;
 
 @Entity @Data @AllArgsConstructor @NoArgsConstructor @Builder @ToString

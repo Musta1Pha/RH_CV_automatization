@@ -3,6 +3,7 @@ package com.example.rh_cv_automatisation.candidateManagement.web;
 import com.example.rh_cv_automatisation.Common.dtos.response.EntretienResponseDTO;
 import com.example.rh_cv_automatisation.candidateManagement.dtos.request.CandidateRequestDTO;
 import com.example.rh_cv_automatisation.candidateManagement.dtos.response.CandidateResponseDTO;
+import com.example.rh_cv_automatisation.candidateManagement.entities.CvData;
 import com.example.rh_cv_automatisation.candidateManagement.services.CandidateService;
 import com.example.rh_cv_automatisation.jobOfferManagement.dtos.response.OfferEmploiResponseDTO;
 import org.springframework.http.MediaType;
@@ -36,13 +37,11 @@ public class CandidateController {
         candidateService.verifyEmail(token);
     }
 
-
-
-   /* @PostMapping(path = "/apply/{candidateId}")
-    public CandidateResponseDTO apply(@PathVariable Long candidateId , @RequestBody Map<String, Long> requestBody) {
+    @PostMapping(path = "/apply/{candidateId}")
+    public MultipartFile apply(@PathVariable Long candidateId , @RequestBody Map<String, Long> requestBody) {
         Long offerId = requestBody.get("offerId");
         return candidateService.apply(candidateId, offerId);
-    }*/
+    }
 
   /*  @PostMapping(path = "/entretienHoraire/{candidateId}")
     public EntretienResponseDTO entretienHoraire(@PathVariable Long candidateId , @RequestBody Long id) {

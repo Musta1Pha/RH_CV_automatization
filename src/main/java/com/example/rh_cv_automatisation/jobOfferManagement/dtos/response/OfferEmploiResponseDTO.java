@@ -13,8 +13,8 @@ public class OfferEmploiResponseDTO {
     private Long ID_Offer;
     private String title;
     private String description;
-    private String formation;
-    private double experience;
+    private int formation;
+    private int experience;
     private List<RequiredSkillsResponseDTO> requiredSkills;
     private String offerBenefits;
     private String location;

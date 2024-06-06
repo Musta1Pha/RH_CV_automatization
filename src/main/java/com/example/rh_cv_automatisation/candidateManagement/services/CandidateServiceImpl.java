@@ -12,7 +12,11 @@ import com.example.rh_cv_automatisation.candidateManagement.mappers.CandidateMap
 import com.example.rh_cv_automatisation.candidateManagement.mappers.CvDataMapper;
 import com.example.rh_cv_automatisation.candidateManagement.repositories.CandidateRepository;
 import com.example.rh_cv_automatisation.candidateManagement.repositories.CvDataRepository;
+import com.example.rh_cv_automatisation.jobOfferManagement.dtos.request.RequiredSkillsRequestDTO;
 import com.example.rh_cv_automatisation.jobOfferManagement.dtos.response.OfferEmploiResponseDTO;
+import com.example.rh_cv_automatisation.jobOfferManagement.entities.Candidature;
+import com.example.rh_cv_automatisation.jobOfferManagement.entities.OffreEmploi;
+import com.example.rh_cv_automatisation.jobOfferManagement.entities.RequiredSkills;
 import com.example.rh_cv_automatisation.jobOfferManagement.mappers.CandidatureMapper;
 import com.example.rh_cv_automatisation.jobOfferManagement.mappers.JobOfferMapper;
 import com.example.rh_cv_automatisation.jobOfferManagement.repositories.CandidatureRepository;
@@ -24,8 +28,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Component
 public class CandidateServiceImpl implements CandidateService{
@@ -63,18 +66,17 @@ public class CandidateServiceImpl implements CandidateService{
         this.cvDataRepository = cvDataRepository;
         this.service = service;
     }
-  /*  @Override
-    public CandidateResponseDTO apply(Long candidateId, Long offerId) {
-        Candidate candidate = candidateRepository.findById(candidateId).get();
-        OffreEmploi offreEmploi = jobOfferRepository.findById(offerId).get();
+  @Override
+    public MultipartFile apply(Long candidateId, Long offerId) {
+        Candidate candidate = candidateRepository.findById(candidateId)
+                .orElseThrow(() -> new NoSuchElementException("Candidate not found with id: " + candidateId));
+        OffreEmploi offreEmploi = jobOfferRepository.findById(offerId)
+                .orElseThrow(() -> new NoSuchElementException("Offer not found with id: " + offerId));
 
-        List<Candidature> candidatures = candidatureRepository.findAllByCandidate(candidate);
+      List<Candidature> candidatures = candidatureRepository.findAllByCandidate(candidate);
 
         Candidature candidatureTest = candidatureRepository.chercherCandidadureExiste(candidate, offreEmploi);
         CandidateResponseDTO candidateResponseDTO = null;
-
-        CandidateRequestDTO candidateRequestDTO = new CandidateRequestDTO();
-        candidateRequestDTO.setCv((MultipartFile) candidate.getCvPath());
 
         List<RequiredSkillsRequestDTO> keywords = new ArrayList<>();
         for(RequiredSkills skill : offreEmploi.getRequiredSkills()){
@@ -82,12 +84,16 @@ public class CandidateServiceImpl implements CandidateService{
             keywords.add(requiredSkillsRequestDTO);
         }
 
+        return CvDataConverter.convertToMultipartFile(candidate.getCv());
+/*
         if (candidatureTest == null) {
+
+
             CandidatureRequestDTO candidatureRequestDTO = CandidatureRequestDTO.builder()
                     .status(status.OPEN)
                     .dateCreation(new Date())
-                    .finalPercentage(llama2RestService.chatWithFile(offreEmploi.getExperience(), offreEmploi.getFormation(), keywords, candidateRequestDTO.getCv()))
-                    .noteEntretien(0)
+                    .finalPercentage(llama2RestService.chatWithFile(offreEmploi.getExperience(), offreEmploi.getFormation(), keywords, CvDataConverter.convertToMultipartFile(candidate.getCv())))
+                    .noteEntretien(-1)
                     .build();
 
             Candidature candidature = candidatureMapper.dtoToEntity(candidatureRequestDTO);
@@ -116,8 +122,8 @@ public class CandidateServiceImpl implements CandidateService{
             communService.sendNotificationOffre(offerId);
 
         }
-        return candidateResponseDTO;
-    }*/
+        return candidateResponseDTO;*/
+    }
 
     @Override
     public String createAccount(CandidateRequestDTO candidateRequestDTO, MultipartFile file) throws IOException {
